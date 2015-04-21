@@ -1,53 +1,23 @@
 import pygame, sys, random
 from pygame.locals import *
+from collectibles import *
+from windowSettings import *
+from player import *
 
 
 def terminate():
     pygame.quit()
     sys.exit()
 
-class Food:
 
-    def __init__(self, newFoodCounter, foodScore):
-        self.foodCounter = 0
-        self.foodSize = 20
-        self.newFoodCounter = newFoodCounter
-        self.foodScore = foodScore
-        self.rectangle = pygame.Rect(random.randint(0, window.width-self.foodSize), random.randint(0, window.height - self.foodSize), self.foodSize, self.foodSize)
-
-class GreenFood(Food):
-
-    def __init__(self):
-        Food.__init__(self, 40, 1)
-
-class RedFood(Food):
-
-    def __init__(self):
-        Food.__init__(self, 100, 2)
-
-class BlueFood(Food):
-
-    def __init__(self):
-        Food.__init__(self, 200, 5)
-
-class Window:
-
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
 
 window = Window(400, 400)
 
-class Player:
 
-    def __init__(self, left, top, width, height):
-        self.rectangle = pygame.Rect(left, top, width, height)
-
-
-
-redFood = RedFood()
-greenFood = GreenFood()
-blueFood = BlueFood()
+food_range = [window.width, window.height]
+redFood = RedFood(food_range)
+greenFood = GreenFood(food_range)
+blueFood = BlueFood(food_range)
 
 
 
@@ -57,10 +27,6 @@ mainClock = pygame.time.Clock()
 
 
 #window
-
-
-#WINDOWWIDTH = 400
-#WINDOWHEIGHT = 400
 windowSurface = pygame.display.set_mode((window.width, window.height), 0, 32)
 pygame.display.set_caption('Collision Input')
 
@@ -73,37 +39,28 @@ WHITE = (255, 255, 255)
 PURPLE = (180, 40, 215)
 
 
-#food data
-'''
-foodCounter = 0
-foodRedCounter = 0
-foodBlueCounter = 0
-NEWREDFOOD = 100
-NEWBLUEFOOD = 200
-NEWFOOD = 40
-FOODSIZE = 20
-player = pygame.Rect(300, 100, 50, 50)
-'''
 
-
-player = Player(300, 100, 50, 50)
+player = Player(300, 100, 50, 50, 6)
 
 foods = []
 foods_red = []
 foods_blue = []
 
 for i in range(20):
-    foods.append(GreenFood())
+    foods.append(GreenFood(food_range))
 
 #Score
 gameScore = 0
 
 
 #movement variables
+
 moveLeft = False
 moveRight = False
 moveUp = False
 moveDown = False
+
+movement = {"hor": False, "ver": False }
 
 MOVESPEED = 6
 
@@ -117,15 +74,19 @@ while True:
         #Press button
         if event.type == KEYDOWN:
             if event.key == K_LEFT or event.key == ord('a'):
+                movement["hor"] = "left"
                 moveRight = False
                 moveLeft = True
             if event.key == K_RIGHT or event.key == ord('d'):
+                movement["hor"] = "right"
                 moveLeft = False
                 moveRight = True
             if event.key == K_UP or event.key == ord('w'):
+                movement["ver"] = "up"
                 moveDown = False
                 moveUp = True
             if event.key == K_DOWN or event.key == ord('s'):
+                movement["ver"] = "down"
                 moveUp = False
                 moveDown = True
         #Release button
@@ -152,13 +113,13 @@ while True:
     blueFood.foodCounter += 1
     if greenFood.foodCounter == greenFood.newFoodCounter:
         greenFood.foodCounter = 0
-        foods.append(GreenFood())
+        foods.append(GreenFood(food_range))
     if redFood.foodCounter == redFood.newFoodCounter:
         redFood.foodCounter = 0
-        foods_red.append(RedFood())
+        foods_red.append(RedFood(food_range))
     if blueFood.foodCounter == redFood.newFoodCounter:
         blueFood.foodCounter = 0
-        foods_blue.append(BlueFood())
+        foods_blue.append(BlueFood(food_range))
 
 
     #Draw Background
